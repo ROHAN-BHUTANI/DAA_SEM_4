@@ -1,0 +1,57 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Job {
+    int id;
+    int deadline;
+    int profit;
+};
+
+// Custom comparator to sort jobs by descending profit
+bool compare(Job a, Job b) {
+    return a.profit > b.profit;
+}
+
+pair<int, int> jobScheduling(Job arr[], int n) {
+    // Sort all jobs in decreasing order of profit
+    sort(arr, arr + n, compare);
+
+    // Find maximum deadline to define time slots
+    int maxDeadline = 0;
+    for (int i = 0; i < n; i++)
+        maxDeadline = max(maxDeadline, arr[i].deadline);
+
+    // Create an array to keep track of free time slots
+    vector<bool> slot(maxDeadline + 1, false); // 1-based indexing
+    int countJobs = 0, totalProfit = 0;
+
+    for (int i = 0; i < n; i++) {
+        // Check for a free slot from deadline to 1
+        for (int j = arr[i].deadline; j > 0; j--) {
+            if (!slot[j]) {
+                slot[j] = true;            // Mark slot as occupied
+                countJobs++;              // Increment job count
+                totalProfit += arr[i].profit; // Add profit
+                break;
+            }
+        }
+    }
+    return {countJobs, totalProfit};
+}
+
+int main() {
+    int n;
+    cout << "Enter number of jobs: ";
+    cin >> n;
+    Job arr[n];
+    cout << "Enter job id, deadline, profit:\n";
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i].id >> arr[i].deadline >> arr[i].profit;
+    }
+
+    pair<int, int> result = jobScheduling(arr, n);
+    cout << "Maximum jobs done: " << result.first << endl;
+    cout << "Total profit earned: " << result.second << endl;
+
+    return 0;
+}
